@@ -4,41 +4,516 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>캘린더치</title>
+<meta name="description" content="6자리 초대코드 하나로 가족·연인·친구와 일정을 함께 보는 무료 공유 캘린더. 디데이, 달력 꾸미기, 홈 화면 위젯까지.">
+<meta property="og:title" content="캘린더치 — 같이 쓰는 달력">
+<meta property="og:description" content="6자리 초대코드 하나로 가족·연인·친구와 일정을 함께 봐요. 전부 무료예요.">
+<meta property="og:image" content="https://shinjihye96.github.io/assets/icon.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap">
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-         max-width: 34rem; margin: 0 auto; padding: 4rem 1.5rem; line-height: 1.7;
-         color: #1a1a1a; }
-  h1 { font-size: 2rem; margin-bottom: .5rem; }
-  p.lead { color: #555; margin-top: 0; }
-  ul { padding-left: 1.2rem; color: #333; }
-  a { color: #2b6cb0; }
-  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5;
-           font-size: .9rem; color: #666; }
+  /* Neo둥근모 — 앱 로고와 같은 픽셀 글꼴 (OFL 1.1, 라이선스는 assets/font/neodgm-OFL.txt) */
+  @font-face {
+    font-family: "NeoDunggeunmo";
+    src: url("assets/font/neodgm.ttf") format("truetype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  :root {
+    --ground: #F6F5FA;
+    --surface: #FFFFFF;
+    --surface-2: #FBFAFE;
+    --ink: #1B1826;
+    --muted: #6E6880;
+    --faint: #A9A3BC;
+    --line: #E6E3EF;
+    --line-soft: #F0EEF6;
+    --accent: #7C5CE0;
+    --accent-soft: #F1ECFD;
+    --rose: #D85C72;      --rose-soft: #FBEDF0;
+    --teal: #0E9C8C;      --teal-soft: #E4F5F2;
+    --purple: #8E64E3;    --purple-soft: #F3ECFD;
+    --pink: #D6438A;      --pink-soft: #FBE9F2;
+    --blue: #3F72D8;
+    --shadow: 0 18px 40px -24px rgba(40, 24, 90, .45);
+    --shadow-lift: 0 26px 60px -30px rgba(40, 24, 90, .55);
+    --display: "NeoDunggeunmo", "Apple SD Gothic Neo", sans-serif;
+    --body: "Gowun Dodum", "Apple SD Gothic Neo", sans-serif;
+  }
   @media (prefers-color-scheme: dark) {
-    body { background: #141414; color: #ececec; }
-    p.lead, footer { color: #aaa; }
-    ul { color: #ddd; }
-    a { color: #7cb3f0; }
-    footer { border-top-color: #333; }
+    :root:not([data-theme="light"]) {
+      --ground: #141220;
+      --surface: #1D1A2B;
+      --surface-2: #232036;
+      --ink: #EFEDF7;
+      --muted: #A49CBB;
+      --faint: #766E8C;
+      --line: #302B45;
+      --line-soft: #292540;
+      --accent: #A88BF5;
+      --accent-soft: #2A2340;
+      --rose: #E8798D;    --rose-soft: #3A2530;
+      --teal: #35C3B2;    --teal-soft: #1B3733;
+      --purple: #A98AF0;  --purple-soft: #2C2545;
+      --pink: #EE6BA9;    --pink-soft: #3B2233;
+      --blue: #7BA0EC;
+      --shadow: 0 18px 40px -26px rgba(0, 0, 0, .8);
+      --shadow-lift: 0 26px 60px -30px rgba(0, 0, 0, .9);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #141220;
+    --surface: #1D1A2B;
+    --surface-2: #232036;
+    --ink: #EFEDF7;
+    --muted: #A49CBB;
+    --faint: #766E8C;
+    --line: #302B45;
+    --line-soft: #292540;
+    --accent: #A88BF5;
+    --accent-soft: #2A2340;
+    --rose: #E8798D;    --rose-soft: #3A2530;
+    --teal: #35C3B2;    --teal-soft: #1B3733;
+    --purple: #A98AF0;  --purple-soft: #2C2545;
+    --pink: #EE6BA9;    --pink-soft: #3B2233;
+    --blue: #7BA0EC;
+    --shadow: 0 18px 40px -26px rgba(0, 0, 0, .8);
+    --shadow-lift: 0 26px 60px -30px rgba(0, 0, 0, .9);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.75;
+    font-size: 17px;
+    overflow-x: hidden;
+  }
+  .cd-wrap { width: 100%; max-width: 68rem; margin: 0 auto; padding-inline: 20px; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; letter-spacing: 0; }
+
+  /* ── 헤더 ── */
+  header { padding-block: 22px 8px; }
+  .cd-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .cd-brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 20px; }
+  .cd-brand img { width: 34px; height: 34px; border-radius: 9px; }
+  .cd-free-tag {
+    font-size: 13px; color: var(--accent); background: var(--accent-soft);
+    padding: 3px 10px; border-radius: 999px; line-height: 1.6;
+  }
+
+  /* ── 히어로 ── */
+  .cd-hero-outer { position: relative; }
+  /* 배경 장식 — 원·둥근 사각형만 쓴다 */
+  .cd-blob { position: absolute; border-radius: 50%; filter: blur(46px); opacity: .55; z-index: 0; pointer-events: none; }
+  .cd-blob-1 { width: 320px; height: 320px; background: var(--purple-soft); top: -70px; left: -90px; }
+  .cd-blob-2 { width: 240px; height: 240px; background: var(--pink-soft); bottom: -70px; left: 40%; }
+  .cd-blob-3 { width: 300px; height: 300px; background: var(--teal-soft); top: 30px; right: -120px; }
+  .cd-square { position: absolute; z-index: 0; border-radius: 12px; pointer-events: none; }
+  .cd-sq-1 { width: 34px; height: 34px; background: var(--accent); opacity: .16; transform: rotate(18deg); top: 40px; left: 1.5%; }
+  .cd-sq-2 { width: 18px; height: 18px; background: var(--rose); opacity: .22; transform: rotate(-12deg); bottom: 70px; left: 45%; }
+  .cd-ring { position: absolute; z-index: 0; border-radius: 50%; border: 3px solid var(--teal); opacity: .22; pointer-events: none; }
+  .cd-ring-1 { width: 52px; height: 52px; top: 6px; left: 43%; }
+  .cd-ring-2 { width: 24px; height: 24px; bottom: 24px; right: 3%; border-color: var(--pink); }
+
+  .cd-hero {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1.02fr 1fr; gap: 48px; align-items: center;
+    padding-block: 36px 56px;
+  }
+  .cd-appicon {
+    width: 76px; height: 76px; border-radius: 20px; display: block; margin-bottom: 18px;
+    box-shadow: var(--shadow-lift);
+  }
+  .cd-hero h1 { font-size: clamp(34px, 5.2vw, 52px); line-height: 1.25; margin: 0 0 14px; }
+  .cd-hero h1 em { font-style: normal; color: var(--accent); }
+  .cd-lead { font-size: 18px; color: var(--muted); margin: 0 0 28px; max-width: 30rem; }
+  .cd-stores { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cd-btn {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    padding: 12px 20px; border-radius: 14px; font-size: 16px; font-family: var(--display);
+    border: 1px solid transparent; transition: transform .15s ease;
+  }
+  .cd-btn svg { width: 18px; height: 18px; flex: none; }
+  .cd-btn-primary { background: var(--accent); color: #fff; box-shadow: var(--shadow); }
+  .cd-btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+  .cd-btn:hover { transform: translateY(-2px); }
+  @media (prefers-reduced-motion: reduce) { .cd-btn { transition: none; } .cd-btn:hover { transform: none; } }
+
+  /* ── 앱 화면 (실제 달력 화면 그대로, 광고 영역만 뺐다) ── */
+  .cd-phone {
+    width: min(340px, 100%); margin-inline: auto; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 34px; box-shadow: var(--shadow-lift);
+    padding: 20px 12px 0; overflow: hidden;
+    aspect-ratio: 9 / 19.5;            /* 아이폰 화면 비율 */
+    display: flex; flex-direction: column;
+  }
+  .cd-app-top { display: flex; align-items: center; justify-content: space-between; padding: 0 6px 12px; }
+  .cd-app-month { font-family: var(--display); font-size: 18px; display: inline-flex; align-items: center; gap: 6px; }
+  .cd-caret { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--ink); }
+  .cd-app-actions { display: inline-flex; align-items: center; gap: 10px; }
+  .cd-star { width: 17px; height: 17px; display: block; color: #F3C34C; }
+  .cd-today-btn { font-size: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 3px 11px; color: var(--ink); }
+  .cd-chips { display: flex; gap: 8px; padding: 0 6px 10px; }
+  .cd-chip {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line);
+    border-radius: 12px; padding: 5px 10px; font-size: 12px; color: var(--ink);
+  }
+  .cd-avatar { width: 12px; height: 12px; border-radius: 50%; background: var(--faint); flex: none; }
+  .cd-check { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--accent); flex: none; }
+  .cd-dow { display: grid; grid-template-columns: repeat(7, 1fr); font-size: 11px; color: var(--muted); text-align: center; padding-bottom: 4px; }
+  .cd-dow .cd-sun { color: var(--rose); }
+  .cd-dow .cd-sat { color: var(--blue); }
+  .cd-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 1fr; flex: 1; }
+  .cd-cell {
+    position: relative; min-height: 54px; padding: 5px 2px 0;
+    border-top: 1px solid var(--line-soft); font-size: 11px; font-variant-numeric: tabular-nums;
+  }
+  .cd-lunar { position: absolute; right: 3px; top: 4px; font-size: 9px; color: var(--faint); }
+  .cd-cell.cd-out { color: var(--faint); }
+  .cd-cell.cd-out .cd-lunar { opacity: .6; }
+  .cd-cell.cd-sun { color: var(--rose); }
+  .cd-cell.cd-sat { color: var(--blue); }
+  .cd-day { display: inline-block; padding-left: 3px; }
+  .cd-cell.cd-today .cd-day {
+    background: var(--ink); color: var(--surface); border-radius: 50%; padding: 0;
+    width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px;
+  }
+  /* 일정 막대 — 종일은 멤버 색 채움 + 흰 글씨, 시간 지정은 옅은 배경 + 왼쪽 세로 막대 */
+  .cd-ev {
+    position: absolute; left: 2px; height: 15px; border-radius: 4px; z-index: 1;
+    font-size: 9.5px; line-height: 15px; padding-left: 5px;
+    white-space: nowrap; overflow: hidden;
+  }
+  .cd-ev.cd-fill { color: #fff; }
+  .cd-ev.cd-soft { padding-left: 8px; }
+  .cd-ev.cd-soft::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    border-radius: 4px 0 0 4px; background: currentColor;
+  }
+  .cd-ev.cd-faded { opacity: .4; }
+  .cd-fill.cd-c-rose { background: var(--rose); }
+  .cd-fill.cd-c-teal { background: var(--teal); }
+  .cd-fill.cd-c-purple { background: var(--purple); }
+  .cd-fill.cd-c-pink { background: var(--pink); }
+  .cd-soft.cd-c-rose { background: var(--rose-soft); color: var(--rose); }
+  .cd-soft.cd-c-teal { background: var(--teal-soft); color: var(--teal); }
+  .cd-soft.cd-c-purple { background: var(--purple-soft); color: var(--purple); }
+  .cd-soft.cd-c-pink { background: var(--pink-soft); color: var(--pink); }
+  /* 달력 꾸미기 — 도형 스티커 */
+  /* 앱의 기본 스티커(assets/stickers/*.svg)를 그대로 쓰고 색만 입힌다 */
+  .cd-deco {
+    position: absolute; pointer-events: none; width: 14px; height: 14px; opacity: .55; z-index: 0;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    -webkit-mask-size: contain; mask-size: contain;
+  }
+  .cd-deco-clover { background: var(--pink); -webkit-mask-image: url(assets/stickers/clover.svg); mask-image: url(assets/stickers/clover.svg); }
+  .cd-deco-tri { background: var(--teal); -webkit-mask-image: url(assets/stickers/polygon.svg); mask-image: url(assets/stickers/polygon.svg); }
+  .cd-deco-oval { background: var(--accent); -webkit-mask-image: url(assets/stickers/ellipse.svg); mask-image: url(assets/stickers/ellipse.svg); }
+  .cd-deco-chevron { background: var(--rose); -webkit-mask-image: url(assets/stickers/chevron.svg); mask-image: url(assets/stickers/chevron.svg); }
+  .cd-deco-circle { background: var(--teal); -webkit-mask-image: url(assets/stickers/circle.svg); mask-image: url(assets/stickers/circle.svg); }
+  .cd-deco-line { background: var(--purple); -webkit-mask-image: url(assets/stickers/thin_rectangle.svg); mask-image: url(assets/stickers/thin_rectangle.svg); }
+  /* 등록 버튼과 하단 탭 */
+  .cd-app-bottom { position: relative; margin-top: auto; }
+  .cd-fab {
+    position: absolute; right: 6px; bottom: 48px; width: 42px; height: 42px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+    display: block;
+  }
+  .cd-fab::before, .cd-fab::after {
+    content: ""; position: absolute; left: 50%; top: 50%; background: var(--ink); border-radius: 2px; transform: translate(-50%, -50%);
+  }
+  .cd-fab::before { width: 15px; height: 2px; }
+  .cd-fab::after { width: 2px; height: 15px; }
+  .cd-tabs {
+    display: grid; grid-template-columns: repeat(3, 1fr); text-align: center;
+    border-top: 1px solid var(--line-soft); padding: 9px 0 12px; font-size: 10px; color: var(--faint);
+  }
+  .cd-tab img { display: block; width: 22px; height: 22px; margin: 0 auto 4px; }
+  .cd-tab.cd-on { color: var(--ink); }
+  .cd-tab:not(.cd-on) img { filter: grayscale(1); opacity: .45; }
+
+  /* ── 섹션 공통 ── */
+  section { padding-block: 40px; }
+  .cd-eyebrow { font-size: 13px; letter-spacing: .12em; color: var(--muted); margin: 0 0 6px; }
+  .cd-sec-title { font-size: clamp(24px, 3.4vw, 32px); margin: 0 0 24px; }
+
+  /* ── 기능 카드 ── */
+  .cd-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .cd-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 20px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .cd-tag { height: 6px; width: 46px; border-radius: 999px; }
+  .cd-card h3 { font-size: 19px; margin: 6px 0 0; }
+  .cd-card p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+  /* ── 시작 단계 ── */
+  .cd-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .cd-step { display: flex; gap: 14px; align-items: flex-start; }
+  .cd-n {
+    flex: none; width: 30px; height: 30px; border-radius: 10px; background: var(--accent-soft);
+    color: var(--accent); font-family: var(--display); font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cd-step h3 { font-size: 17px; margin: 0 0 2px; }
+  .cd-step p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* ── 더 있는 것 ── */
+  .cd-more {
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 18px;
+    padding: 22px 24px; display: flex; flex-wrap: wrap; gap: 10px 22px;
+  }
+  .cd-more span { color: var(--muted); font-size: 15px; }
+  .cd-more b { color: var(--ink); font-weight: 400; font-family: var(--display); }
+
+  /* ── 마무리 ── */
+  .cd-closing { text-align: center; padding-block: 48px 8px; }
+  .cd-closing h2 { font-size: clamp(24px, 3.6vw, 34px); margin: 0 0 10px; }
+  .cd-closing p { color: var(--muted); margin: 0 0 22px; }
+  .cd-closing .cd-stores { justify-content: center; }
+
+  footer {
+    border-top: 1px solid var(--line); margin-top: 40px; padding-block: 28px 44px;
+    color: var(--muted); font-size: 14px;
+  }
+  .cd-foot { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; }
+  .cd-foot nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+
+  @media (max-width: 860px) {
+    .cd-hero { grid-template-columns: 1fr; gap: 32px; padding-block: 20px 40px; }
+    .cd-blob-3, .cd-ring-1, .cd-sq-2 { display: none; }
   }
 </style>
 </head>
 <body>
-  <h1>캘린더치</h1>
-  <p class="lead">6자리 초대코드로 가족·친구·연인·직장 동료와 일정과 디데이를 함께 관리하는 무료 캘린더 앱입니다.</p>
+<header>
+  <div class="cd-wrap cd-topbar">
+    <div class="cd-brand">
+      <img src="assets/icon.png" alt="" width="34" height="34">
+      캘린더치
+    </div>
+    <span class="cd-free-tag">무료 · 인앱결제 없음</span>
+  </div>
+</header>
 
-  <ul>
-    <li>초대코드 한 번으로 그룹 일정 공유</li>
-    <li>기념일·디데이를 함께 세고 알림 받기</li>
-    <li>스티커로 꾸미는 나만의 달력</li>
-    <li>홈 화면 위젯 지원</li>
-  </ul>
+<main>
+  <div class="cd-hero-outer">
+    <span class="cd-blob cd-blob-1"></span>
+    <span class="cd-blob cd-blob-2"></span>
+    <span class="cd-blob cd-blob-3"></span>
+    <span class="cd-square cd-sq-1"></span>
+    <span class="cd-square cd-sq-2"></span>
+    <span class="cd-ring cd-ring-1"></span>
+    <span class="cd-ring cd-ring-2"></span>
 
-  <p><a href="https://apps.apple.com/kr/app/id6797439644">App Store에서 받기</a></p>
+    <div class="cd-wrap cd-hero">
+      <div>
+        <img class="cd-appicon" src="assets/icon.png" alt="캘린더치 앱 아이콘" width="76" height="76">
+        <h1>같이 쓰는 달력,<br><em>캘린더치</em></h1>
+        <p class="cd-lead">가족·연인·친구·직장 동료와 일정을 한 달력에서 봐요. 누가 언제 뭘 하는지 묻지 않아도 알 수 있어요.</p>
+        <div class="cd-stores">
+          <a class="cd-btn cd-btn-primary" href="https://apps.apple.com/kr/app/id6797439644">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.7c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.6zM14.2 5.9c.6-.8 1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.9 1 .1 2-.5 2.7-1.3z"/></svg>
+            App Store
+          </a>
+          <a class="cd-btn cd-btn-secondary" href="https://play.google.com/store/apps/details?id=com.calendutch.app">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l.1.1 9.3-9.3v-.2L3.7 2.2l-.1.1zm12.5 6.2L13.7 6l-9 5.2c-.1 0-.1.1 0 .1l9 5.2 2.4-2.4-2.3-2.3 2.3-2.3zm3.5 2-2.3-1.3-2.4 2.3 2.4 2.4 2.3-1.3c.7-.4.7-1.7 0-2.1z"/></svg>
+            Google Play
+          </a>
+        </div>
+      </div>
 
-  <footer>
-    문의 <a href="mailto:calendutch.help@gmail.com">calendutch.help@gmail.com</a><br>
-    <a href="https://shinjihye96.github.io/calendutch-privacy/privacy_policy.html">개인정보 처리방침</a>
-  </footer>
+      <!-- 앱의 달력 화면을 그대로 옮겼다(광고 영역만 뺐다) -->
+      <div class="cd-phone" role="img" aria-label="캘린더치 앱의 달력 화면 — 그룹 일정이 멤버 색 막대로 표시되고, 지난달 날짜의 일정은 흐리게 보인다">
+        <div class="cd-app-top">
+          <span class="cd-app-month">2026년 10월 <i class="cd-caret"></i></span>
+          <span class="cd-app-actions">
+            <svg class="cd-star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12,2.5 15,9 22,9.8 16.8,14.4 18.3,21.3 12,17.8 5.7,21.3 7.2,14.4 2,9.8 9,9"/></svg>
+            <span class="cd-today-btn">오늘</span>
+          </span>
+        </div>
+        <div class="cd-chips">
+          <span class="cd-chip"><i class="cd-avatar"></i>내 캘린더<i class="cd-check"></i></span>
+          <span class="cd-chip"><i class="cd-avatar"></i>우리 가족<i class="cd-check"></i></span>
+        </div>
+        <div class="cd-dow" aria-hidden="true">
+          <span class="cd-sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="cd-sat">토</span>
+        </div>
+        <div class="cd-grid" aria-hidden="true">
+          <div class="cd-cell cd-out cd-sun"><span class="cd-day">27</span><span class="cd-lunar">8.16</span></div>
+          <div class="cd-cell cd-out"><span class="cd-day">28</span><span class="cd-lunar">8.17</span>
+            <div class="cd-ev cd-fill cd-c-teal cd-faded" style="top:26px; width:calc(200% - 4px)">엄마 출장</div>
+          </div>
+          <div class="cd-cell cd-out"><span class="cd-day">29</span><span class="cd-lunar">8.18</span></div>
+          <div class="cd-cell cd-out"><span class="cd-day">30</span><span class="cd-lunar">8.19</span></div>
+          <div class="cd-cell"><span class="cd-day">1</span><span class="cd-lunar">8.20</span></div>
+          <div class="cd-cell"><span class="cd-day">2</span><span class="cd-lunar">8.21</span></div>
+          <div class="cd-cell cd-sat"><span class="cd-day">3</span><span class="cd-lunar">8.22</span>
+            <div class="cd-ev cd-fill cd-c-rose" style="top:26px; width:calc(100% - 4px)">개천절</div>
+          </div>
+
+          <div class="cd-cell cd-sun"><span class="cd-day">4</span><span class="cd-lunar">8.23</span></div>
+          <div class="cd-cell"><span class="cd-day">5</span><span class="cd-lunar">8.24</span>
+            <div class="cd-ev cd-fill cd-c-purple" style="top:26px; width:calc(300% - 4px)">제주 여행</div>
+          </div>
+          <div class="cd-cell"><span class="cd-day">6</span><span class="cd-lunar">8.25</span></div>
+          <div class="cd-cell"><span class="cd-day">7</span><span class="cd-lunar">8.26</span></div>
+          <div class="cd-cell"><span class="cd-day">8</span><span class="cd-lunar">8.27</span>
+            <span class="cd-deco cd-deco-clover" style="right:-18px; bottom:-6px; width:120px; height:114px; opacity:.32; transform:rotate(-8deg)"></span>
+          </div>
+          <div class="cd-cell"><span class="cd-day">9</span><span class="cd-lunar">8.28</span>
+            <div class="cd-ev cd-soft cd-c-teal" style="top:26px; width:calc(100% - 4px)">병원 2시</div>
+          </div>
+          <div class="cd-cell cd-sat"><span class="cd-day">10</span><span class="cd-lunar">8.29</span></div>
+
+          <div class="cd-cell cd-sun"><span class="cd-day">11</span><span class="cd-lunar">9.1</span></div>
+          <div class="cd-cell"><span class="cd-day">12</span><span class="cd-lunar">9.2</span></div>
+          <div class="cd-cell"><span class="cd-day">13</span><span class="cd-lunar">9.3</span>
+            <div class="cd-ev cd-fill cd-c-pink" style="top:26px; width:calc(200% - 4px)">아빠 생신</div>
+            <span class="cd-deco cd-deco-oval" style="right:-10px; bottom:4px; width:74px; height:40px; opacity:.4; transform:rotate(-14deg)"></span>
+          </div>
+          <div class="cd-cell"><span class="cd-day">14</span><span class="cd-lunar">9.4</span></div>
+          <div class="cd-cell cd-today"><span class="cd-day">15</span><span class="cd-lunar">9.5</span>
+            <div class="cd-ev cd-soft cd-c-purple" style="top:26px; width:calc(100% - 4px)">가족 모임</div>
+          </div>
+          <div class="cd-cell"><span class="cd-day">16</span><span class="cd-lunar">9.6</span></div>
+          <div class="cd-cell cd-sat"><span class="cd-day">17</span><span class="cd-lunar">9.7</span>
+            <span class="cd-deco cd-deco-tri" style="left:2px; bottom:6px; width:46px; height:46px; opacity:.38; transform:rotate(6deg)"></span>
+          </div>
+
+          <div class="cd-cell cd-sun"><span class="cd-day">18</span><span class="cd-lunar">9.8</span></div>
+          <div class="cd-cell"><span class="cd-day">19</span><span class="cd-lunar">9.9</span></div>
+          <div class="cd-cell"><span class="cd-day">20</span><span class="cd-lunar">9.10</span>
+            <div class="cd-ev cd-soft cd-c-rose" style="top:26px; width:calc(100% - 4px)">학부모 상담</div>
+          </div>
+          <div class="cd-cell"><span class="cd-day">21</span><span class="cd-lunar">9.11</span>
+            <span class="cd-deco cd-deco-circle" style="left:10px; bottom:12px; width:18px; height:18px; opacity:.6"></span>
+          </div>
+          <div class="cd-cell"><span class="cd-day">22</span><span class="cd-lunar">9.12</span></div>
+          <div class="cd-cell"><span class="cd-day">23</span><span class="cd-lunar">9.13</span></div>
+          <div class="cd-cell cd-sat"><span class="cd-day">24</span><span class="cd-lunar">9.14</span></div>
+
+          <div class="cd-cell cd-sun"><span class="cd-day">25</span><span class="cd-lunar">9.15</span></div>
+          <div class="cd-cell"><span class="cd-day">26</span><span class="cd-lunar">9.16</span>
+            <span class="cd-deco cd-deco-line" style="left:-6px; bottom:14px; width:92px; height:10px; opacity:.45; transform:rotate(-8deg)"></span>
+          </div>
+          <div class="cd-cell"><span class="cd-day">27</span><span class="cd-lunar">9.17</span>
+            <div class="cd-ev cd-soft cd-c-pink" style="top:26px; width:calc(100% - 4px)">미술 학원</div>
+          </div>
+          <div class="cd-cell"><span class="cd-day">28</span><span class="cd-lunar">9.18</span>
+            <span class="cd-deco cd-deco-chevron" style="right:2px; bottom:10px; width:34px; height:34px; opacity:.45; transform:rotate(12deg)"></span>
+          </div>
+          <div class="cd-cell"><span class="cd-day">29</span><span class="cd-lunar">9.19</span></div>
+          <div class="cd-cell"><span class="cd-day">30</span><span class="cd-lunar">9.20</span>
+            <div class="cd-ev cd-fill cd-c-teal" style="top:26px; width:calc(200% - 4px)">가을 소풍</div>
+          </div>
+          <div class="cd-cell cd-sat"><span class="cd-day">31</span><span class="cd-lunar">9.21</span></div>
+        </div>
+
+        <div class="cd-app-bottom">
+          <span class="cd-fab" aria-hidden="true"></span>
+          <div class="cd-tabs" aria-hidden="true">
+            <span class="cd-tab cd-on"><img src="assets/icons/calendar_blue.svg" alt="" width="22" height="22">캘린더</span>
+            <span class="cd-tab"><img src="assets/icons/list_orange.svg" alt="" width="22" height="22">디데이</span>
+            <span class="cd-tab"><img src="assets/icons/multi_pink.svg" alt="" width="22" height="22">내정보</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="cd-wrap">
+    <p class="cd-eyebrow">할 수 있는 일</p>
+    <h2 class="cd-sec-title">같이 보고, 같이 세고, 같이 꾸며요</h2>
+    <div class="cd-cards">
+      <article class="cd-card">
+        <div class="cd-tag" style="background: var(--teal)"></div>
+        <h3>초대코드로 모이기</h3>
+        <p>6자리 코드를 보내면 끝이에요. 가족·연인·친구·직장으로 그룹을 나눠 만들고, 그룹별 색으로 누구 일정인지 한눈에 봐요.</p>
+      </article>
+      <article class="cd-card">
+        <div class="cd-tag" style="background: var(--pink)"></div>
+        <h3>함께 세는 디데이</h3>
+        <p>기념일, 시험, 여행까지 남은 날을 함께 세요. 등록하면 그룹원 모두에게 보이고, 정한 날짜에 알림이 가요.</p>
+      </article>
+      <article class="cd-card">
+        <div class="cd-tag" style="background: var(--purple)"></div>
+        <h3>달력 꾸미기</h3>
+        <p>스티커로 내 달력을 꾸며요. 꾸민 모습은 나만 보니까 마음껏 붙여도 괜찮아요.</p>
+      </article>
+      <article class="cd-card">
+        <div class="cd-tag" style="background: var(--rose)"></div>
+        <h3>홈 화면 위젯</h3>
+        <p>디데이, 오늘 일정, 월간 달력 위젯을 홈 화면에 둘 수 있어요. 앱을 열지 않아도 오늘 할 일이 보여요.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="cd-wrap">
+    <p class="cd-eyebrow">시작하기</p>
+    <h2 class="cd-sec-title">세 걸음이면 됩니다</h2>
+    <div class="cd-steps">
+      <div class="cd-step">
+        <div class="cd-n">1</div>
+        <div>
+          <h3>앱을 설치하고 로그인</h3>
+          <p>구글 또는 애플 계정으로 로그인해요. 따로 가입할 게 없어요.</p>
+        </div>
+      </div>
+      <div class="cd-step">
+        <div class="cd-n">2</div>
+        <div>
+          <h3>그룹을 만들고 코드 공유</h3>
+          <p>그룹을 만들면 6자리 초대코드가 나와요. 그 코드만 전해주세요.</p>
+        </div>
+      </div>
+      <div class="cd-step">
+        <div class="cd-n">3</div>
+        <div>
+          <h3>일정을 등록</h3>
+          <p>누가 일정을 올리면 다른 사람 달력에 바로 반영되고 알림도 가요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cd-wrap">
+    <div class="cd-more">
+      <span><b>공휴일·음력</b> 대체공휴일과 음력 날짜를 함께 표시</span>
+      <span><b>캘린더 연동</b> 등록한 일정을 구글·기기 캘린더에도 함께 기록</span>
+      <span><b>참석자 알림</b> 일정 알림은 참석자에게만</span>
+      <span><b>무료</b> 광고와 후원으로 운영, 인앱결제 없음</span>
+    </div>
+  </section>
+
+  <section class="cd-wrap cd-closing">
+    <h2>오늘 저녁 약속부터 같이 적어볼까요</h2>
+    <p>설치하고 초대코드 하나만 보내면 됩니다.</p>
+    <div class="cd-stores">
+      <a class="cd-btn cd-btn-primary" href="https://apps.apple.com/kr/app/id6797439644">App Store에서 받기</a>
+      <a class="cd-btn cd-btn-secondary" href="https://play.google.com/store/apps/details?id=com.calendutch.app">Google Play에서 받기</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="cd-wrap cd-foot">
+    <span>© 2026 캘린더치</span>
+    <nav>
+      <a href="mailto:calendutch.help@gmail.com">문의하기</a>
+      <a href="https://shinjihye96.github.io/calendutch-privacy/privacy_policy.html">개인정보 처리방침</a>
+      <a href="https://ko-fi.com/shinjihye">개발자 응원하기</a>
+      <a href="assets/font/neodgm-OFL.txt">글꼴 Neo둥근모 (OFL 1.1)</a>
+    </nav>
+  </div>
+</footer>
 </body>
 </html>
